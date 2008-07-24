@@ -1,19 +1,8 @@
---- bubbros-1.5/http2/httppages.py.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/http2/httppages.py	2006-07-28 22:22:51.000000000 +0200
-@@ -38,7 +38,8 @@
- 
- 
- class PageServer:
--    CONFIGFILE = 'config.txt'
-+    CONFIGFILE = os.path.join(os.environ.get('HOME', '.'), '.bubbros',
-+                              'config.txt')
-     localservers = None
- 
-     def __init__(self, Game):
---- bubbros-1.5/BubBob.py.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/BubBob.py	2006-07-28 22:22:51.000000000 +0200
-@@ -26,16 +26,11 @@
- sys.path.append(LOCALDIR)
+diff -up bubbros-1.6/BubBob.py.foo bubbros-1.6/BubBob.py
+--- bubbros-1.6/BubBob.py.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/BubBob.py	2008-07-24 13:44:29.000000000 +0200
+@@ -27,16 +27,11 @@ import socket, tempfile
+ sys.path.insert(0, LOCALDIR)
  os.chdir(LOCALDIR)
  
 -try:
@@ -34,7 +23,7 @@
  
  
  def load_url_file():
-@@ -129,7 +129,7 @@
+@@ -138,7 +133,7 @@ try:
      browser = webbrowser.get()
      name = getattr(browser, 'name', browser.__class__.__name__)
      print "Trying to open '%s' with '%s'..." % (url, name)
@@ -43,22 +32,10 @@
  except:
      exc, val, tb = sys.exc_info()
      print '-'*60
---- bubbros-1.5/bubbob/bonuses.py.fixes	2006-02-04 19:56:12.000000000 +0100
-+++ bubbros-1.5/bubbob/bonuses.py	2006-07-28 22:22:51.000000000 +0200
-@@ -1387,6 +1387,10 @@
- 
- 
- try:
-+    if sys.path[1][0:10] == '/usr/lib64':
-+        sys.path.append('/usr/lib64/bubbros')
-+    else:
-+        sys.path.append('/usr/lib/bubbros')
-     import statesaver
- except ImportError:
-     print "'statesaver' module not compiled, no clock bonus"
---- bubbros-1.5/bubbob/bb.py.fixes	2006-02-04 19:56:12.000000000 +0100
-+++ bubbros-1.5/bubbob/bb.py	2006-07-28 22:22:51.000000000 +0200
-@@ -14,6 +14,10 @@
+diff -up bubbros-1.6/bubbob/bb.py.foo bubbros-1.6/bubbob/bb.py
+--- bubbros-1.6/bubbob/bb.py.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/bubbob/bb.py	2008-07-24 13:44:29.000000000 +0200
+@@ -14,6 +14,10 @@ except:
      pass
  LOCALDIR = os.path.dirname(os.path.abspath(LOCALDIR))
  # ----------
@@ -69,8 +46,192 @@
  
  import random, time
  
---- bubbros-1.5/doc/Client.py.1.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/doc/Client.py.1	2006-07-28 22:22:51.000000000 +0200
+diff -up bubbros-1.6/bubbob/bonuses.py.foo bubbros-1.6/bubbob/bonuses.py
+--- bubbros-1.6/bubbob/bonuses.py.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/bubbob/bonuses.py	2008-07-24 13:44:29.000000000 +0200
+@@ -1703,6 +1703,10 @@ class Chestnut(RandomBonus):
+ 
+ 
+ try:
++    if sys.path[1][0:10] == '/usr/lib64':
++        sys.path.append('/usr/lib64/bubbros')
++    else:
++        sys.path.append('/usr/lib/bubbros')
+     import statesaver
+ except ImportError:
+     print "'statesaver' module not compiled, no clock bonus"
+diff -up bubbros-1.6/bubbob/statesaver.c.foo bubbros-1.6/bubbob/statesaver.c
+--- bubbros-1.6/bubbob/statesaver.c.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/bubbob/statesaver.c	2008-07-24 13:44:29.000000000 +0200
+@@ -75,10 +75,6 @@ static PyObject* genbuild(PyObject* g)
+     Py_INCREF(g);  /* exhausted -- can return 'g' itself */
+     return g;
+   }
+-  if (f->f_nfreevars || f->f_ncells) {
+-    PyErr_SetString(PyExc_ValueError, "generator has cell or free vars");
+-    goto error;
+-  }
+ 
+   if (co->co_argcount == 0)
+     dummy = NULL;
+@@ -143,11 +139,6 @@ static int gencopy(PyObject* g2, PyObjec
+       }
+       f2 = (PyFrameObject*) x;
+ 
+-      if (f2->f_stacksize != f->f_stacksize) {
+-        PyErr_SetString(PyExc_TypeError, "stack size mismatch");
+-        goto error;
+-      }
+-
+       if (f2->f_stacktop != NULL)
+         while (f2->f_stacktop != f2->f_localsplus)
+           {
+diff -up bubbros-1.6/common/stdlog.py.foo bubbros-1.6/common/stdlog.py
+--- bubbros-1.6/common/stdlog.py.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/common/stdlog.py	2008-07-24 13:44:29.000000000 +0200
+@@ -6,7 +6,8 @@ class LogFile:
+     
+     def __init__(self, filename=None, limitsize=32768):
+         if filename is None:
+-            filename = sys.argv[0]
++            filename = os.path.join(os.environ.get('HOME', '.'), '.bubbros', 
++                                    os.path.basename(sys.argv[0]))
+             if filename.endswith('.py'):
+                 filename = filename[:-3]
+             filename += '.log'
+diff -up bubbros-1.6/display/dpy_pygame.py.foo bubbros-1.6/display/dpy_pygame.py
+--- bubbros-1.6/display/dpy_pygame.py.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/display/dpy_pygame.py	2008-07-24 13:44:29.000000000 +0200
+@@ -13,7 +13,7 @@ class Display:
+     musthidemouse = 0
+     mousevisible = 1
+ 
+-    def __init__(self, width, height, title, transparency='yes', fullscreen='no'):
++    def __init__(self, width, height, title, transparency='yes', fullscreen='yes'):
+         self.use_transparency = not transparency.startswith('n')
+         self.use_fullscreen = fullscreen.startswith('y')
+ 
+@@ -200,7 +200,7 @@ def htmloptionstext(nameval):
+     return '''
+ <%s> Full Screen (Esc key to exit)</input><%s><br>
+ <%s> Draw slightly transparent bubbles</input><%s><br>
+-''' % (nameval("checkbox", "fullscreen", "yes", default="no"),
++''' % (nameval("checkbox", "fullscreen", "yes", default="yes"),
+        nameval("hidden", "fullscreen", "no"),
+        nameval("checkbox", "transparency", "yes", default="yes"),
+        nameval("hidden", "transparency", "no"))
+diff -up bubbros-1.6/display/modes.py.foo bubbros-1.6/display/modes.py
+--- bubbros-1.6/display/modes.py.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/display/modes.py	2008-07-24 13:44:29.000000000 +0200
+@@ -29,6 +29,10 @@ class Mode:
+         self.extraoptsdescr = extraoptsdescr
+         self.options = options.copy()
+         self.url = url
++        if sys.path[1][0:10] == '/usr/lib64':
++            sys.path.append('/usr/lib64/bubbros')
++        else:
++            sys.path.append('/usr/lib/bubbros')
+ 
+     def getmodule(self):
+         return __import__(self.prefix + self.name.lower(), globals(),
+@@ -94,18 +98,18 @@ class SoundMode(Mode):
+ 
+ def graphicmodeslist():
+     return [
++        GraphicMode('pygame', 'PyGame library (all platforms)',
++                    ['--fullscreen=yes    go full screen (Esc key to exit, default)',
++                     '--fullscreen=no     run in windowed mode',
++                     '--transparency=yes  slightly transparent bubbles (default)',
++                     '--transparency=no   disable it (a bit faster)'],
++                    {'transparency': 'yes', 'fullscreen': 'yes'},
++                    url='http://www.pygame.org'),
+         GraphicMode('X', 'XWindow (Linux/Unix)',
+                     ['--shm=yes  use the Shared Memory extension (default)',
+                      '--shm=no   disable it (for remote connections or old X servers)',
+                      ],
+                     {'shm': 'yes'}),
+-        GraphicMode('windows', 'MS Windows', []),
+-        GraphicMode('pygame', 'PyGame library (all platforms)',
+-                    ['--fullscreen=yes    go full screen (Esc key to exit)',
+-                     '--transparency=yes  slightly transparent bubbles (default)',
+-                     '--transparency=no   disable it (a bit faster)'],
+-                    {'transparency': 'yes', 'fullscreen': 'no'},
+-                    url='http://www.pygame.org'),
+         GraphicMode('gtk', 'PyGTK (Gnome)',
+                     ['--zoom=xxx%         scale image by xxx %'],
+                     {'zoom': '100'},
+@@ -120,10 +124,6 @@ def soundmodeslist():
+                   ['--freq=#  mixer frequency (default 44100)',
+                    '--fmt=#   data format (default S16_NE, --fmt=list for a list)'],
+                   {'freq': '44100', 'fmt': 'S16_NE'}),
+-        SoundMode('windows', 'audio mixer for Windows',
+-                  ['--freq=#  mixer frequency (default 44100)',
+-                   '--bits=#  bits per sample (8 or default 16)'],
+-                  {'freq': '44100', 'bits': '16'}),
+         SoundMode('off', 'no sounds', []),
+         ]
+ 
+diff -up bubbros-1.6/display/pclient.py.foo bubbros-1.6/display/pclient.py
+--- bubbros-1.6/display/pclient.py.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/display/pclient.py	2008-07-24 13:44:29.000000000 +0200
+@@ -162,8 +162,8 @@ class Playfield:
+         if mode[-1].has_key('cfgfile'):
+             self.trackcfgfile = mode[-1]['cfgfile']
+         else:
+-            self.trackcfgfile = os.path.join(DataChunk.SOURCEDIR,
+-                                             'http2', 'config.txt')
++            self.trackcfgfile = os.path.join(os.environ.get('HOME', '.'),
++                                             '.bubbros', 'config.txt')
+         self.udpsock = None
+         self.udpsock_low = None
+         self.udpsock2 = None
+diff -up bubbros-1.6/doc/BubBob.py.1.foo bubbros-1.6/doc/BubBob.py.1
+--- bubbros-1.6/doc/BubBob.py.1.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/doc/BubBob.py.1	2008-07-24 13:44:29.000000000 +0200
+@@ -1,23 +1,21 @@
+-.\" $Id: BubBob.py.1,v 1.2 2005/04/13 18:24:17 opqdonut Exp $
++.\" $Id: bubbros.6,v 1.2 2005/04/13 18:24:17 opqdonut Exp $
+ .\"
+ .\" Process this file with
+-.\" groff -man -Tascii BubBob.py.1
++.\" groff -man -Tascii bubbros.6
+ .\"
+ 
+-.TH BubBob.py 1 "APRIL 2005" Linux "User Manuals"
++.TH bubbros 6 "APRIL 2005" Linux "User Manuals"
+ 
+ .SH NAME
+-BubBob.py \- Generic startup script for bub-n-bros
++bubbros \- Generic startup script for bub-n-bros
+ 
+ .SH SYNOPSIS
+-.B BubBob.py
+-.br
+-.B python BubBob.py
++.B bubbros
+ 
+ .SH DESCRIPTION
+-.B BubBob.py
++.B bubbros
+ runs
+-.BR bb.py (1)
++.BR bubbros-server (6)
+ (the bub-n-bros server) and then tries to open the url of its control
+ panel in your webbrowser.
+ 
+@@ -26,7 +24,7 @@ The environment variable BROWSER affects
+ on Unix systems.
+ 
+ .SH SEE ALSO
+-.BR bb.py (1)
+-.BR Client.py (1)
++.BR bubbros-server (6)
++.BR bubbros-client (6)
+ .BR python (1)
+ 
+diff -up bubbros-1.6/doc/Client.py.1.foo bubbros-1.6/doc/Client.py.1
+--- bubbros-1.6/doc/Client.py.1.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/doc/Client.py.1	2008-07-24 13:44:29.000000000 +0200
 @@ -1,27 +1,23 @@
 -.\" $Id: Client.py.1,v 1.3 2005/05/06 21:32:38 arigo Exp $
 +.\" $Id: bubbros-client.6,v 1.3 2005/05/06 21:32:38 arigo Exp $
@@ -105,7 +266,7 @@
  It supports many different audio and video drivers and is very
  multi-platform.
  
-@@ -38,12 +34,6 @@
+@@ -38,12 +34,6 @@ Connect to server running on given port 
  defined, search for servers on the local network.
  
  .TP
@@ -118,7 +279,7 @@
  .BI "-d " DRIVER ", --display=" DRIVER
  Use video driver
  .IR DRIVER .
-@@ -57,9 +47,6 @@
+@@ -57,9 +47,6 @@ running. See the 
  .B --shm
  option.
  .TP
@@ -128,7 +289,7 @@
  .B pygame
  PyGame gaming library for python (if installed) has video output. Use
  it if this is specified. See
-@@ -86,21 +73,21 @@
+@@ -86,21 +73,21 @@ You can get a list of supported formats 
  .TP
  .BI --freq= N
  This option concerns only the 
@@ -155,7 +316,7 @@
  .BR host:port .
  
  .TP
-@@ -145,11 +132,6 @@
+@@ -145,11 +132,6 @@ Use the linux audio mixer. See the
  .BR --freq " and " --fmt " options."
  
  .TP
@@ -167,7 +328,7 @@
  .B off
  No sounds.
  .RE
-@@ -195,6 +177,6 @@
+@@ -195,6 +177,6 @@ display driver. Scale output by
  .IR N %.
  
  .SH SEE ALSO
@@ -177,51 +338,9 @@
 +.BR bubbros-server (6)
  .BR python (1)
 \ No newline at end of file
---- bubbros-1.5/doc/BubBob.py.1.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/doc/BubBob.py.1	2006-07-28 22:22:51.000000000 +0200
-@@ -1,23 +1,21 @@
--.\" $Id: BubBob.py.1,v 1.2 2005/04/13 18:24:17 opqdonut Exp $
-+.\" $Id: bubbros.6,v 1.2 2005/04/13 18:24:17 opqdonut Exp $
- .\"
- .\" Process this file with
--.\" groff -man -Tascii BubBob.py.1
-+.\" groff -man -Tascii bubbros.6
- .\"
- 
--.TH BubBob.py 1 "APRIL 2005" Linux "User Manuals"
-+.TH bubbros 6 "APRIL 2005" Linux "User Manuals"
- 
- .SH NAME
--BubBob.py \- Generic startup script for bub-n-bros
-+bubbros \- Generic startup script for bub-n-bros
- 
- .SH SYNOPSIS
--.B BubBob.py
--.br
--.B python BubBob.py
-+.B bubbros
- 
- .SH DESCRIPTION
--.B BubBob.py
-+.B bubbros
- runs
--.BR bb.py (1)
-+.BR bubbros-server (6)
- (the bub-n-bros server) and then tries to open the url of its control
- panel in your webbrowser.
- 
-@@ -26,7 +24,7 @@
- on Unix systems.
- 
- .SH SEE ALSO
--.BR bb.py (1)
--.BR Client.py (1)
-+.BR bubbros-server (6)
-+.BR bubbros-client (6)
- .BR python (1)
- 
---- bubbros-1.5/doc/bb.py.1.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/doc/bb.py.1	2006-07-28 22:22:51.000000000 +0200
+diff -up bubbros-1.6/doc/bb.py.1.foo bubbros-1.6/doc/bb.py.1
+--- bubbros-1.6/doc/bb.py.1.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/doc/bb.py.1	2008-07-24 13:44:29.000000000 +0200
 @@ -1,29 +1,21 @@
 -.\" $Id: bb.py.1,v 1.3 2005/04/17 17:19:32 opqdonut Exp $
 +.\" $Id: bubbros-server.6,v 1.3 2005/04/17 17:19:32 opqdonut Exp $
@@ -258,7 +377,7 @@
  starts an http server that acts as a control panel for the server. The
  server listens on port 
  .B 8000 
-@@ -124,6 +116,6 @@
+@@ -124,6 +116,6 @@ The server outputs helpful debug informa
  game servers.
  
  .SH SEE ALSO
@@ -267,130 +386,22 @@
 +.BR bubbros (6)
 +.BR bubbros-client (6)
  .BR python (1)
---- bubbros-1.5/display/modes.py.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/display/modes.py	2006-07-28 22:22:51.000000000 +0200
-@@ -29,6 +29,10 @@
-         self.extraoptsdescr = extraoptsdescr
-         self.options = options.copy()
-         self.url = url
-+        if sys.path[1][0:10] == '/usr/lib64':
-+            sys.path.append('/usr/lib64/bubbros')
-+        else:
-+            sys.path.append('/usr/lib/bubbros')
+diff -up bubbros-1.6/http2/httppages.py.foo bubbros-1.6/http2/httppages.py
+--- bubbros-1.6/http2/httppages.py.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/http2/httppages.py	2008-07-24 13:44:29.000000000 +0200
+@@ -38,7 +38,8 @@ class Options:
  
-     def getmodule(self):
-         return __import__(self.prefix + self.name.lower(), globals(),
-@@ -94,18 +98,18 @@
  
- def graphicmodeslist():
-     return [
-+        GraphicMode('pygame', 'PyGame library (all platforms)',
-+                    ['--fullscreen=yes    go full screen (Esc key to exit, default)',
-+                     '--fullscreen=no     run in windowed mode',
-+                     '--transparency=yes  slightly transparent bubbles (default)',
-+                     '--transparency=no   disable it (a bit faster)'],
-+                    {'transparency': 'yes', 'fullscreen': 'yes'},
-+                    url='http://www.pygame.org'),
-         GraphicMode('X', 'XWindow (Linux/Unix)',
-                     ['--shm=yes  use the Shared Memory extension (default)',
-                      '--shm=no   disable it (for remote connections or old X servers)',
-                      ],
-                     {'shm': 'yes'}),
--        GraphicMode('windows', 'MS Windows', []),
--        GraphicMode('pygame', 'PyGame library (all platforms)',
--                    ['--fullscreen=yes    go full screen (Esc key to exit)',
--                     '--transparency=yes  slightly transparent bubbles (default)',
--                     '--transparency=no   disable it (a bit faster)'],
--                    {'transparency': 'yes', 'fullscreen': 'no'},
--                    url='http://www.pygame.org'),
-         GraphicMode('gtk', 'PyGTK (Gnome)',
-                     ['--zoom=xxx%         scale image by xxx %'],
-                     {'zoom': '100'},
-@@ -120,10 +124,6 @@
-                   ['--freq=#  mixer frequency (default 44100)',
-                    '--fmt=#   data format (default S16_NE, --fmt=list for a list)'],
-                   {'freq': '44100', 'fmt': 'S16_NE'}),
--        SoundMode('windows', 'audio mixer for Windows',
--                  ['--freq=#  mixer frequency (default 44100)',
--                   '--bits=#  bits per sample (8 or default 16)'],
--                  {'freq': '44100', 'bits': '16'}),
-         SoundMode('off', 'no sounds', []),
-         ]
+ class PageServer:
+-    CONFIGFILE = 'config.txt'
++    CONFIGFILE = os.path.join(os.environ.get('HOME', '.'), '.bubbros',
++                              'config.txt')
+     localservers = None
  
---- bubbros-1.5/display/dpy_pygame.py.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/display/dpy_pygame.py	2006-07-28 22:23:54.000000000 +0200
-@@ -13,7 +13,7 @@
-     musthidemouse = 0
-     mousevisible = 1
- 
--    def __init__(self, width, height, title, transparency='yes', fullscreen='no'):
-+    def __init__(self, width, height, title, transparency='yes', fullscreen='yes'):
-         self.use_transparency = not transparency.startswith('n')
-         self.use_fullscreen = fullscreen.startswith('y')
- 
-@@ -200,7 +200,7 @@
-     return '''
- <%s> Full Screen (Esc key to exit)</input><%s><br>
- <%s> Draw slightly transparent bubbles</input><%s><br>
--''' % (nameval("checkbox", "fullscreen", "yes", default="no"),
-+''' % (nameval("checkbox", "fullscreen", "yes", default="yes"),
-        nameval("hidden", "fullscreen", "no"),
-        nameval("checkbox", "transparency", "yes", default="yes"),
-        nameval("hidden", "transparency", "no"))
---- bubbros-1.5/display/pclient.py.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/display/pclient.py	2006-07-28 22:22:51.000000000 +0200
-@@ -155,8 +155,8 @@
-         if mode[-1].has_key('cfgfile'):
-             self.trackcfgfile = mode[-1]['cfgfile']
-         else:
--            self.trackcfgfile = os.path.join(DataChunk.SOURCEDIR,
--                                             'http2', 'config.txt')
-+            self.trackcfgfile = os.path.join(os.environ.get('HOME', '.'),
-+                                             '.bubbros', 'config.txt')
-         self.udpsock = None
-         self.udpsock_low = None
-         self.udpsock2 = None
---- bubbros-1.5/common/stdlog.py.fixes	2006-02-04 19:56:31.000000000 +0100
-+++ bubbros-1.5/common/stdlog.py	2006-07-28 22:22:51.000000000 +0200
-@@ -6,7 +6,8 @@
-     
-     def __init__(self, filename=None, limitsize=32768):
-         if filename is None:
--            filename = sys.argv[0]
-+            filename = os.path.join(os.environ.get('HOME', '.'), '.bubbros', 
-+                                    os.path.basename(sys.argv[0]))
-             if filename.endswith('.py'):
-                 filename = filename[:-3]
-             filename += '.log'
-diff -up bubbros-1.6/bubbob/statesaver.c~ bubbros-1.6/bubbob/statesaver.c
---- bubbros-1.6/bubbob/statesaver.c~	2007-09-10 11:50:46.000000000 +0200
-+++ bubbros-1.6/bubbob/statesaver.c	2007-09-10 11:50:46.000000000 +0200
-@@ -75,10 +75,6 @@ static PyObject* genbuild(PyObject* g)
-     Py_INCREF(g);  /* exhausted -- can return 'g' itself */
-     return g;
-   }
--  if (f->f_nfreevars || f->f_ncells) {
--    PyErr_SetString(PyExc_ValueError, "generator has cell or free vars");
--    goto error;
--  }
- 
-   if (co->co_argcount == 0)
-     dummy = NULL;
-@@ -143,11 +139,6 @@ static int gencopy(PyObject* g2, PyObjec
-       }
-       f2 = (PyFrameObject*) x;
- 
--      if (f2->f_stacksize != f->f_stacksize) {
--        PyErr_SetString(PyExc_TypeError, "stack size mismatch");
--        goto error;
--      }
--
-       if (f2->f_stacktop != NULL)
-         while (f2->f_stacktop != f2->f_localsplus)
-           {
-diff -up bubbros-1.6/java/Makefile~ bubbros-1.6/java/Makefile
---- bubbros-1.6/java/Makefile~	2007-09-10 11:53:35.000000000 +0200
-+++ bubbros-1.6/java/Makefile	2007-09-10 11:53:35.000000000 +0200
+     def __init__(self, Game):
+diff -up bubbros-1.6/java/Makefile.foo bubbros-1.6/java/Makefile
+--- bubbros-1.6/java/Makefile.foo	2007-09-08 17:03:41.000000000 +0200
++++ bubbros-1.6/java/Makefile	2008-07-24 13:44:29.000000000 +0200
 @@ -1,2 +1,2 @@
  pclient.class: pclient.java
 -	javac -target 1.1 pclient.java
