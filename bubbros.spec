@@ -11,7 +11,6 @@ Patch0:         bubbros-1.5-fixes.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  python-devel ImageMagick desktop-file-utils libX11-devel
 BuildRequires:  libXext-devel xorg-x11-proto-devel java-1.4.2-gcj-compat-devel
-Requires:       python-abi = %(%{__python} -c "import sys ; print sys.version[:3]")
 Requires:       pygame pygtk2 htmlview hicolor-icon-theme
 
 %description
