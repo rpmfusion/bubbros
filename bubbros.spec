@@ -1,6 +1,6 @@
 Name:           bubbros
 Version:        1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Bub and Brothers game inspired by the classic Bubble and Bobble
 Group:          Amusements/Games
 License:        MIT and Artistic Licenses
@@ -123,6 +123,9 @@ fi
 
 
 %changelog
+* Thu Jul 24 2008 Hans de Goede <j.w.r.degoede@hhs.nl> 1.6-2
+- Release bump for rpmfusion
+
 * Mon Sep 10 2007 Hans de Goede <j.w.r.degoede@hhs.nl> 1.6-1
 - New upstream release 1.6
 
