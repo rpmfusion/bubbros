@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=BubBros
+Comment=Bub and Brothers game inspired by the classic Bubble and Bobble
+Exec=bubbros
+Icon=bubbros
+Terminal=false
+StartupNotify=false
+Type=Application
+Categories=Game;ArcadeGame;
