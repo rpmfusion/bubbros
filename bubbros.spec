@@ -1,6 +1,6 @@
 Name:           bubbros
 Version:        1.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Bub and Brothers game inspired by the classic Bubble and Bobble
 Group:          Amusements/Games
 License:        MIT and Artistic Licenses
@@ -11,7 +11,7 @@ Patch0:         bubbros-1.5-fixes.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  python-devel ImageMagick desktop-file-utils libX11-devel
 BuildRequires:  libXext-devel xorg-x11-proto-devel java-1.4.2-gcj-compat-devel
-Requires:       pygame pygtk2 htmlview hicolor-icon-theme
+Requires:       pygame pygtk2 hicolor-icon-theme
 
 %description
 This is a direct clone of the MacOS game Bub & Bob of McSebi. Thanks Sebi for
@@ -122,6 +122,9 @@ fi
 
 
 %changelog
+* Wed Dec 17 2008 Hans de Goede <j.w.r.degoede@hhs.nl> 1.6-4
+- Drop no longer needed htmlview requires
+
 * Wed Dec 17 2008 Hans de Goede <j.w.r.degoede@hhs.nl> 1.6-3
 - Rebuild for new python
 
