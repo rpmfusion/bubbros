@@ -1,6 +1,6 @@
 Name:           bubbros
 Version:        1.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Bub and Brothers game inspired by the classic Bubble and Bobble
 Group:          Amusements/Games
 License:        MIT and Artistic Licenses
@@ -122,6 +122,9 @@ fi
 
 
 %changelog
+* Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 1.6-5
+- rebuild for new F11 features
+
 * Wed Dec 17 2008 Hans de Goede <j.w.r.degoede@hhs.nl> 1.6-4
 - Drop no longer needed htmlview requires
 
