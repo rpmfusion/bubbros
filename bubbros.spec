@@ -1,16 +1,15 @@
 Name:           bubbros
-Version:        1.6
-Release:        8%{?dist}
+Version:        1.6.2
+Release:        1%{?dist}
 Summary:        Bub and Brothers game inspired by the classic Bubble and Bobble
 Group:          Amusements/Games
 License:        MIT and Artistic Licenses
 URL:            http://bub-n-bros.sourceforge.net/
-Source0:        http://downloads.sourceforge.net/bub-n-bros/%{name}-%{version}.tar.bz2
+Source0:        http://downloads.sourceforge.net/bub-n-bros/%{name}-%{version}.tar.gz
 Source1:        bubbros.desktop
 Patch0:         bubbros-1.5-fixes.patch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  python-devel ImageMagick desktop-file-utils libX11-devel
-BuildRequires:  libXext-devel xorg-x11-proto-devel java-1.4.2-gcj-compat-devel
+BuildRequires:  libXext-devel xorg-x11-proto-devel java-devel
 Requires:       pygame pygtk2 hicolor-icon-theme
 
 %description
@@ -52,7 +51,6 @@ convert bubbob/images/dragon_0.ppm -transparent '#010101' -crop 32x32+0+0 \
 
 
 %install
-rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{_bindir}
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/%{name}
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/%{name}
@@ -85,7 +83,10 @@ install -m 644 doc/bb.py.1 $RPM_BUILD_ROOT%{_mandir}/man6/bubbros-server.6
 install -m 644 doc/Client.py.1 $RPM_BUILD_ROOT%{_mandir}/man6/bubbros-client.6
 # below is the desktop file and icon stuff.
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/applications
-desktop-file-install --vendor dribble           \
+desktop-file-install \
+%if 0%{?fedora} && 0%{?fedora} < 19
+  --vendor dribble \
+%endif
   --dir $RPM_BUILD_ROOT%{_datadir}/applications \
   %{SOURCE1}
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
@@ -93,35 +94,33 @@ install -p -m 644 %{name}.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
 
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-
 %post
-touch --no-create %{_datadir}/icons/hicolor || :
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
-fi
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 %postun
-touch --no-create %{_datadir}/icons/hicolor || :
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-   %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+if [ $1 -eq 0 ] ; then
+    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
+
+%posttrans
+gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%defattr(-,root,root,-)
 %doc LICENSE.txt artistic.txt levels.txt
 %{_bindir}/bubbros*
 %{_libdir}/%{name}
 %{_datadir}/%{name}
-%{_datadir}/applications/dribble-%{name}.desktop
+%{_datadir}/applications/*%{name}.desktop
 %{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 %{_mandir}/man6/bubbros*.6.gz
 
 
 %changelog
+* Sun Oct 13 2013 Hans de Goede <j.w.r.degoede@gmail.com> - 1.6.2-1
+- New upstream release 1.6.2
+
 * Sun Mar 03 2013 Nicolas Chauvet <kwizart@gmail.com> - 1.6-8
 - Mass rebuilt for Fedora 19 Features
 

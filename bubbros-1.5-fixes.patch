@@ -60,32 +60,6 @@ diff -up bubbros-1.6/bubbob/bonuses.py.foo bubbros-1.6/bubbob/bonuses.py
      import statesaver
  except ImportError:
      print "'statesaver' module not compiled, no clock bonus"
-diff -up bubbros-1.6/bubbob/statesaver.c.foo bubbros-1.6/bubbob/statesaver.c
---- bubbros-1.6/bubbob/statesaver.c.foo	2007-09-08 17:03:41.000000000 +0200
-+++ bubbros-1.6/bubbob/statesaver.c	2008-07-24 13:44:29.000000000 +0200
-@@ -75,10 +75,6 @@ static PyObject* genbuild(PyObject* g)
-     Py_INCREF(g);  /* exhausted -- can return 'g' itself */
-     return g;
-   }
--  if (f->f_nfreevars || f->f_ncells) {
--    PyErr_SetString(PyExc_ValueError, "generator has cell or free vars");
--    goto error;
--  }
- 
-   if (co->co_argcount == 0)
-     dummy = NULL;
-@@ -143,11 +139,6 @@ static int gencopy(PyObject* g2, PyObjec
-       }
-       f2 = (PyFrameObject*) x;
- 
--      if (f2->f_stacksize != f->f_stacksize) {
--        PyErr_SetString(PyExc_TypeError, "stack size mismatch");
--        goto error;
--      }
--
-       if (f2->f_stacktop != NULL)
-         while (f2->f_stacktop != f2->f_localsplus)
-           {
 diff -up bubbros-1.6/common/stdlog.py.foo bubbros-1.6/common/stdlog.py
 --- bubbros-1.6/common/stdlog.py.foo	2007-09-08 17:03:41.000000000 +0200
 +++ bubbros-1.6/common/stdlog.py	2008-07-24 13:44:29.000000000 +0200
