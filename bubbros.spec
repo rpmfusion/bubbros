@@ -1,6 +1,6 @@
 Name:           bubbros
 Version:        1.6.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Bub and Brothers game inspired by the classic Bubble and Bobble
 Group:          Amusements/Games
 License:        MIT and Artistic Licenses
@@ -118,6 +118,9 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %changelog
+* Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 1.6.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
+
 * Sun Oct 13 2013 Hans de Goede <j.w.r.degoede@gmail.com> - 1.6.2-1
 - New upstream release 1.6.2
 
