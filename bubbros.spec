@@ -19,6 +19,10 @@ BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
 BuildRequires:  xorg-x11-proto-devel
 BuildRequires:  java-devel
+# I can't be bothered to fix this obsolete package so have used a dirty hack
+%if 0%{?fedora} >= 29
+Requires:       python-unversioned-command
+%endif
 Requires:       pygame
 Requires:       pygtk2
 Requires:       hicolor-icon-theme
