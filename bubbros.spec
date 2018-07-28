@@ -8,9 +8,20 @@ URL:            http://bub-n-bros.sourceforge.net/
 Source0:        http://downloads.sourceforge.net/bub-n-bros/%{name}-%{version}.tar.gz
 Source1:        bubbros.desktop
 Patch0:         bubbros-1.5-fixes.patch
-BuildRequires:  python-devel ImageMagick desktop-file-utils libX11-devel
-BuildRequires:  libXext-devel xorg-x11-proto-devel java-devel
-Requires:       pygame pygtk2 hicolor-icon-theme
+BuildRequires:  python2-devel
+# I can't be bothered to fix this obsolete package so have used a dirty hack
+%if 0%{?fedora} >= 29
+BuildRequires:  python-unversioned-command
+%endif
+BuildRequires:  ImageMagick
+BuildRequires:  desktop-file-utils
+BuildRequires:  libX11-devel
+BuildRequires:  libXext-devel
+BuildRequires:  xorg-x11-proto-devel
+BuildRequires:  java-devel
+Requires:       pygame
+Requires:       pygtk2
+Requires:       hicolor-icon-theme
 
 %description
 This is a direct clone of the MacOS game Bub & Bob of McSebi. Thanks Sebi for
@@ -30,7 +41,7 @@ Features:
 %setup -q
 #no backups for this patch, otherwise they end up getting installed!
 %patch0 -p1
-sed -i 's:#! /usr/bin/env python:#!%{__python}:' BubBob.py bubbob/bb.py \
+sed -i 's:#! /usr/bin/env python:#!%{__python2}:' BubBob.py bubbob/bb.py \
   display/Client.py
 chmod +x display/Client.py
 # for %doc
@@ -40,7 +51,7 @@ mv bubbob/levels/README.txt levels.txt
 %build
 make %{?_smp_mflags}
 pushd bubbob/images
-python buildcolors.py
+python2 buildcolors.py
 popd
 pushd java
 rm *.class
@@ -92,19 +103,6 @@ desktop-file-install \
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
 install -p -m 644 %{name}.png \
   $RPM_BUILD_ROOT%{_datadir}/icons/hicolor/32x32/apps
-
-
-%post
-touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-%postun
-if [ $1 -eq 0 ] ; then
-    touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-%posttrans
-gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
