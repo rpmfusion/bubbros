@@ -1,6 +1,6 @@
 Name:           bubbros
 Version:        1.6.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Bub and Brothers game inspired by the classic Bubble and Bobble
 Group:          Amusements/Games
 License:        MIT and Artistic Licenses
@@ -120,6 +120,9 @@ install -p -m 644 %{name}.png \
 
 
 %changelog
+* Sun Aug 19 2018 Leigh Scott <leigh123linux@googlemail.com> - 1.6.2-7
+- Rebuilt for Fedora 29 Mass Rebuild binutils issue
+
 * Thu Jul 26 2018 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.6.2-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
