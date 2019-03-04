@@ -8,6 +8,7 @@ URL:            http://bub-n-bros.sourceforge.net/
 Source0:        http://downloads.sourceforge.net/bub-n-bros/%{name}-%{version}.tar.gz
 Source1:        bubbros.desktop
 Patch0:         bubbros-1.5-fixes.patch
+BuildRequires:  gcc
 BuildRequires:  python2-devel
 # I can't be bothered to fix this obsolete package so have used a dirty hack
 %if 0%{?fedora} >= 29
